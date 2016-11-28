@@ -1,0 +1,17 @@
+Registering megaparsec-5.1.2...
+4\home\msuko\ProjectFP\.cabal-sandbox\x86_64-windows-ghc-8.0.1\megaparsec-5.1.2-CbttbTdlDB5WZmxujJMVs
+hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Pos.o )
+[ 2 of 14] Compiling Text.Megaparsec.Error ( Text\Megaparsec\Error.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Error.o )
+[ 3 of 14] Compiling Text.Megaparsec.Prim ( Text\Megaparsec\Prim.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Prim.o )
+[ 4 of 14] Compiling Text.Megaparsec.ByteString ( Text\Megaparsec\ByteString.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\ByteString.o )
+[ 5 of 14] Compiling Text.Megaparsec.ByteString.Lazy ( Text\Megaparsec\ByteString\Lazy.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\ByteString\Lazy.o )
+[ 6 of 14] Compiling Text.Megaparsec.String ( Text\Megaparsec\String.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\String.o )
+[ 7 of 14] Compiling Text.Megaparsec.Text ( Text\Megaparsec\Text.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Text.o )
+[ 8 of 14] Compiling Text.Megaparsec.Text.Lazy ( Text\Megaparsec\Text\Lazy.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Text\Lazy.o )
+[ 9 of 14] Compiling Text.Megaparsec.Combinator ( Text\Megaparsec\Combinator.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Combinator.o )
+[10 of 14] Compiling Text.Megaparsec.Expr ( Text\Megaparsec\Expr.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Expr.o )
+[11 of 14] Compiling Text.Megaparsec.Perm ( Text\Megaparsec\Perm.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Perm.o )
+[12 of 14] Compiling Text.Megaparsec.Char ( Text\Megaparsec\Char.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Char.o )
+[13 of 14] Compiling Text.Megaparsec.Lexer ( Text\Megaparsec\Lexer.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec\Lexer.o )
+[14 of 14] Compiling Text.Megaparsec  ( Text\Megaparsec.hs, dist\dist-sandbox-8d0d5730\build\Text\Megaparsec.o )
+cabal: Leaving directory 'C:\cygwin64\tmp\cabal-tmp-8008\megaparsec-5.1.2'
