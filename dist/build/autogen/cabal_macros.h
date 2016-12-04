@@ -105,7 +105,7 @@
   (major1) == 2 && (major2) <  25 || \
   (major1) == 2 && (major2) == 25 && (minor) <= 0)
 
-#define CURRENT_COMPONENT_ID "ProjectFP-0.1.0.0"
+#define CURRENT_COMPONENT_ID "ProjectFP-0.1.0.0-HPbFlbptKFU8D8UkEgFzKx"
 
-#define CURRENT_PACKAGE_KEY "ProjectFP-0.1.0.0"
+#define CURRENT_PACKAGE_KEY "ProjectFP-0.1.0.0-HPbFlbptKFU8D8UkEgFzKx"
 
