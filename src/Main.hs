@@ -36,8 +36,9 @@ instance Show Exp where
 	show (ECos expr) = "cos(" ++ show expr ++ ")"
 	show (ENeg expr) = "-("   ++ show expr ++ ")"
 	show (EExp expr) = "e^("  ++ show expr ++ ")"
+	show (EInt x)    = show x
 	show (Const s)   = s
-	show x = show x
+
 
 sc :: Parser () -- ‘sc’ stands for “space consumer”
 sc = let lineComment  = L.skipLineComment "//"
@@ -133,6 +134,7 @@ evalDer :: String -> Either EvalError Exp
 evalDer s = do
 	exp <- first (const Main.ParseError) $ parseExp s
 	e <- derive exp
+
 	return $ simplify e
 
 main :: IO ()
@@ -160,10 +162,12 @@ simplifyBasic :: Exp -> Exp
 --Sabiranje  s nulom 
 simplifyBasic (EAdd exp (EInt 0)) = exp
 simplifyBasic (EAdd (EInt 0) exp) = exp
+simplifyBasic (EAdd exp (ENeg exp2)) = ESub exp exp2
 
 -- Oduzimanje nule i od nule
 simplifyBasic (ESub exp (EInt 0)) = exp
 simplifyBasic (ESub (EInt 0) exp) = ENeg exp --hocemo li ovo?
+simplifyBasic (ESub exp1 (ENeg exp2)) = EAdd exp1 exp2
 
 --Mnozenje nulom
 simplifyBasic (EMul (EInt 0) exp) = EInt 0
