@@ -3,7 +3,7 @@ module Derivation where
 import      Expression
 
 derive :: Exp -> Either EvalError Exp
-derive (EId s) = return $ ENum 1 
+derive (EVar s) = return $ ENum 1 
 derive (EAdd exp1 exp2) = do
   v1 <- derive exp1
   v2 <- derive exp2

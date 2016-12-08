@@ -32,8 +32,8 @@ parens = between (symbol "(") (symbol ")")
 
 term =  parens expr -- terminalni simboli
     <|> ENum <$> double
-    <|> EId <$> symbol "x"
-    <|> EId <$> symbol "y"
+    <|> EVar <$> symbol "x"
+    <|> EVar <$> symbol "y"
     <?> "term"
 
 table = [ [ Prefix (symbol "sin" *> pure ESin)
