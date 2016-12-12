@@ -1,4 +1,9 @@
 *
+ProjectFP.cabal
 dist/*
 .cabal-sandbox/*
 !src
+cabal.sandbox.config
+cabal.config
+Setup.hs
+dist/**
