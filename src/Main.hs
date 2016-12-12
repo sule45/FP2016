@@ -86,7 +86,7 @@ main = runInputT defaultSettings loop
 	  				            }
           Just input -> do { case evalString input of
                                Left msg -> outputStrLn $ show msg
-                               Right exp -> outputStrLn $ show exp
+                               Right exp -> outputStrLn $ show $ simplify exp
                            ; loop
                            }
 	  }
