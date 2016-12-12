@@ -26,9 +26,30 @@ simplifyBasic (EDiv exp (ENum 1)) = exp
 -- Dodati stepenovanje nulom, uz neke provere?
 simplifyBasic (EPow exp (ENum 1)) = exp
 
--- Ovde moramo proveriti da li su exp1 i exp2 jednaki; o tom potom
-simplifyBasic (EAdd (EPow (ESin exp1) (ENum 2)) (EPow (ECos exp2) (ENum 2))) = (ENum 1)
-simplifyBasic (EAdd (EPow (ECos exp1) (ENum 2)) (EPow (ESin exp2) (ENum 2))) = (ENum 1)
+-- Neparnost sinusa i parnost kosinusa
+simplifyBasic (ESin (ENeg exp)) = ENeg (ESin exp)
+simplifyBasic (ECos (ENeg exp)) = ECos exp
+
+-- sin(x)^2 + cos(x)^2 = 1
+-- Ovde moramo proveriti da li su exp1 i exp2 jednaki bolje; o tom potom
+simplifyBasic (EAdd (EPow (ESin exp1) (ENum 2)) (EPow (ECos exp2) (ENum 2))) = 
+                            if (exp1 == exp2) then (ENum 1) 
+                            else (EAdd (EPow (ESin exp1) (ENum 2)) (EPow (ECos exp2) (ENum 2)))
+simplifyBasic (EAdd (EPow (ECos exp1) (ENum 2)) (EPow (ESin exp2) (ENum 2))) = 
+                            if (exp1 == exp2) then (ENum 1) 
+                            else (EAdd (EPow (ECos exp1) (ENum 2)) (EPow (ESin exp2) (ENum 2)))
+
+-- Skracivanje minusa pri deljenju i mnozenju
+simplifyBasic (EDiv (ENeg exp1) (ENeg exp2)) = (EDiv exp1 exp2)
+simplifyBasic (EMul (ENeg exp1) (ENeg exp2)) = (EMul exp1 exp2)
+
+-- f(x)/f(x) se ponasa kao 1 (sem u nulama funkcije f)
+simplifyBasic (EDiv exp1 exp2) = 
+            if (exp1 == exp2) then (ENum 1)
+            else (EDiv exp1 exp2)
+
+-- Negacija negativnog broja ; razmisliti da li ovo zadrzavamo
+simplifyBasic (ENeg (ENum num)) = if (num < 0) then ENum (-num) else (ENeg (ENum num))
 
 simplifyBasic (ENeg (ENeg exp)) = simplify exp
 
@@ -67,6 +88,6 @@ simplify (EDiv exp1 exp2) =
 simplify (ENeg exp) = simplifyBasic (ENeg $ simplify exp)
 
 -- Ako se ne uklapa u prethodne sablone
-simplify exp = exp
+simplify exp = simplifyBasic exp
 
 --sw exp = if x == simplify x then x else sw (simplify x)
