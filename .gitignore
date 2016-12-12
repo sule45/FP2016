@@ -1,5 +1,4 @@
-dist/**
-cabal.config
-cabal.sandbox.config
-.cabal-sandbox/**
+*
+dist/*
 .cabal-sandbox/*
+!src
