@@ -18,7 +18,7 @@ cabal-version:       >=1.10
 library
   hs-source-dirs:    src
   --exposed-modules:   FExpr
-  build-depends:     base >=4.9 && <4.10
+  build-depends:     base >=4.8 && <4.10
                    , megaparsec
                    , mtl
                    , haskeline
