@@ -6,7 +6,7 @@ simplifyBasic :: Exp -> Exp
 --Sabiranje  s nulom 
 simplifyBasic (EAdd exp (ENum 0)) = exp
 simplifyBasic (EAdd (ENum 0) exp) = exp
-simplifyBasic (EAdd exp (ENeg exp2)) = ESub exp exp2
+
 
 -- Oduzimanje nule i od nule
 simplifyBasic (ESub exp (ENum 0)) = exp
@@ -52,6 +52,17 @@ simplifyBasic (EDiv exp1 exp2) =
 simplifyBasic (ENeg (ENum num)) = if (num < 0) then ENum (-num) else (ENeg (ENum num))
 
 simplifyBasic (ENeg (ENeg exp)) = simplify exp
+
+-- Minus izvlacimo ispred zagrada
+simplifyBasic (EMul (ENeg exp1) exp2) = (ENeg (EMul exp1 exp2))
+simplifyBasic (EMul exp1 (ENeg exp2)) = (ENeg (EMul exp1 exp2))
+
+simplifyBasic (EAdd (ENeg exp1) (ENeg exp2)) = (ENeg (EAdd exp1 exp2))
+-- (-a-(-b)) = -(a-b) ; koristiti ovo?
+--simplifyBasic (ESub (ENeg exp1) (ENeg exp2)) = (ENeg (ESub exp1 exp2))
+-- ako se negacija nadje u zbiru, pretvaramo to u razliku
+simplifyBasic (EAdd exp1 (ENeg exp2)) = ESub exp1 exp2
+simplifyBasic (EAdd (ENeg exp1) exp2) = ESub exp2 exp1
 
 -- Ako se ne uklapa u prethodne sablone
 simplifyBasic exp = exp
