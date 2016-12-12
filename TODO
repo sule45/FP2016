@@ -1,0 +1,9 @@
+sabiranje konstanti (i ostale operacije)
+ENeg * ENeg
+ENeg + ENeg
+ENeg - ENeg ?
+Eadd _ ENeg
+EMul ENeg -> ENeg EMul
+poredjenje?
+izvod - operacija ili ne?
+poraditi na parseru
