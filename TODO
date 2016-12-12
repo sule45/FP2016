@@ -1,0 +1,8 @@
+sabiranje konstanti (i ostale operacije)
+ENeg * ENeg
+ENeg + ENeg
+Eadd _ ENeg
+EMul ENeg -> ENeg EMul
+ESin (ENeg)
+ECos (ENeg)
+poredjenje?
