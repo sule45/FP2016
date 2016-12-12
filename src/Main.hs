@@ -21,8 +21,8 @@ sc = let lineComment  = L.skipLineComment "//"
 lexeme = L.lexeme sc
 symbol = L.symbol sc
 
-integer :: Parser Integer
-integer = lexeme L.integer   --parser za integer
+integer :: Parser Double
+integer = fromIntegral <$> lexeme L.integer   --parser za integer
 
 double :: Parser Double
 double = lexeme L.float
@@ -31,6 +31,7 @@ parens :: Parser Exp -> Parser Exp
 parens = between (symbol "(") (symbol ")")
 
 term =  parens expr -- terminalni simboli
+    <|> ENum <$> integer
     <|> ENum <$> double
     <|> EVar <$> symbol "x"
     <|> EVar <$> symbol "y"
