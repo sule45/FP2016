@@ -25,7 +25,7 @@ instance Show Exp where
 	show (EMul expr1 expr2) = show expr1 ++ "*" ++ show expr2
 	show (ESub expr1 expr2) = show expr1 ++ "-" ++ show expr2
 	show (EDiv expr1 expr2) = show expr1 ++ "/" ++ show expr2
-	show (EPow expr1 expr2) = show expr1 ++ "*" ++ show expr2
+	show (EPow expr1 expr2) = show expr1 ++ "^" ++ show expr2
 	show (ELog expr) = "ln("  ++ show expr ++ ")"
 	show (ESin expr) = "sin(" ++ show expr ++ ")"
 	show (ECos expr) = "cos(" ++ show expr ++ ")"
