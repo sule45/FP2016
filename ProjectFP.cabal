@@ -28,7 +28,7 @@ executable ProjectFP
   --hs-source-dirs:	   src
   main-is:             Main.hs
   -- other-extensions:    
-  build-depends:       base >=4.9 && <4.10
+  build-depends:       base >=4.8 && <4.10
                      , megaparsec
                      , mtl
                      , haskeline
