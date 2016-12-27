@@ -62,29 +62,28 @@ simplifyBasic (ENeg (ENum num)) = ENum (-num)
 simplifyBasic (ENeg (ENeg exp)) = simplify exp
 
 -- Minus izvlacimo ispred zagrada
-simplifyBasic (EMul (ENeg exp1) exp2) = (ENeg (EMul exp1 exp2))
-simplifyBasic (EMul exp1 (ENeg exp2)) = (ENeg (EMul exp1 exp2))
+simplifyBasic (EMul (ENeg exp1) exp2) = (ENeg (EMul (simplify exp1) (simplify exp2)))
+simplifyBasic (EMul exp1 (ENeg exp2)) = (ENeg (EMul (simplify exp1) (simplify exp2)))
 
-simplifyBasic (EAdd (ENeg exp1) (ENeg exp2)) = (ENeg (EAdd  exp1 exp2))
+simplifyBasic (EAdd (ENeg exp1) (ENeg exp2)) = (ENeg (EAdd  (simplify exp1) (simplify exp2)))
 -- (-a-(-b)) = -(a-b) ; koristiti ovo?
 --simplifyBasic (ESub (ENeg exp1) (ENeg exp2)) = (ENeg (ESub exp1 exp2))
 -- ako se negacija nadje u zbiru, pretvaramo to u razliku
-simplifyBasic (EAdd exp1 (ENeg exp2)) = ESub exp1 exp2
-simplifyBasic (EAdd (ENeg exp1) exp2) = ESub exp2 exp1
+simplifyBasic (EAdd exp1 (ENeg exp2)) = ESub (simplify exp1) (simplify exp2)
+simplifyBasic (EAdd (ENeg exp1) exp2) = ESub (simplify exp2) (simplify exp1)
 
 -- Ako se ne uklapa u prethodne sablone
-simplifyBasic exp = exp
+simplifyBasic exp =  exp
 
 -- razlog zasto sam napravio simplify i simplifyBasic je da ne bi dolazilo do beskonacne rekurzije
 simplify :: Exp -> Exp
 
---skracivanje konstanti u izrazima
-simplify (EAdd (ENum a) (EAdd (ENum b) exp)) = simplifyBasic $ EAdd (ENum (a+b)) (simplify exp)
-simplify (EAdd (EAdd (ENum a) exp1) (EAdd (ENum b) exp2)) = simplifyBasic (EAdd (ENum (a+b)) (simplify (EAdd (simplify exp1) (simplify exp2))))
+--skracivanje konstanti u izrazima (ako sabiramo sa umnoskom tog izraza, dodati jedan tom umnosku)
+simplify (EAdd (ENum a) (EAdd (ENum b) exp)) = simplifyBasic $ EAdd (ENum (a+b)) (sw exp)
+simplify (EAdd (EAdd (ENum a) exp1) (EAdd (ENum b) exp2)) = simplifyBasic (EAdd (ENum (a+b)) (sw (EAdd (sw exp1) (sw exp2))))
 
-simplify e@(EAdd (EMul (ENum a) exp1) (EMul (ENum b) exp2)) = if (exp1 == exp2) then (EMul (ENum (a+b)) (simplify exp1)) else simplifyBasic e
-simplify e@(EAdd exp1 (EMul (ENum a) exp2)) = if (exp1 == exp2) then (simplifyBasic (EMul (ENum (a+1)) (simplify exp1))) else simplifyBasic e
-
+simplify e@(EAdd (EMul (ENum a) exp1) (EMul (ENum b) exp2)) = if (exp1 == exp2) then (EMul (ENum (a+b)) (sw exp1)) else simplifyBasic e
+simplify e@(EAdd exp1 (EMul (ENum a) exp2)) = if (exp1 == exp2) then (simplifyBasic (EMul (ENum (a+1)) (sw exp1))) else simplifyBasic e
 
 -- Ovo na dno, specificnije cemo prvo ispitati
 -- Sabiranje
@@ -114,7 +113,7 @@ simplify (EDiv exp1 exp2) =
                           in  simplifyBasic (EDiv levi desni)
 
 -- Negacija
-simplify (ENeg exp) = simplifyBasic (ENeg $ simplify exp)
+simplify (ENeg exp) = simplifyBasic (ENeg $ sw exp)
 
 
 -- Ovo moze i ne mora (ako je argument sinusa/kosinusa numericka vrednost van [-pi, pi], ubaciti u dati interval)
@@ -125,14 +124,14 @@ simplify exp@(ECos (ENum a)) = if (a > pi) then (simplify (ECos (ENum (a-pi)))) 
                                                                           (if (a < -pi) then (simplify (ECos (ENum (a+pi)))) else exp)
 
 -- ostali slucajevi
-simplify (EPow exp1 exp2) = simplifyBasic (EPow (simplify exp1) (simplify exp2))
-simplify (ESin exp) = simplifyBasic (ESin (simplify exp))
-simplify (ECos exp) = simplifyBasic (ECos (simplify exp))
+simplify (EPow exp1 exp2) = simplifyBasic (EPow (sw exp1) (sw exp2))
+simplify (ESin exp) = simplifyBasic (ESin (sw exp))
+simplify (ECos exp) = simplifyBasic (ECos (sw exp))
 --ova dva nikad 
-simplify (ELog exp) = simplifyBasic (ELog (simplify exp))
-simplify (EExp exp) = simplifyBasic (EExp (simplify exp))
+simplify (ELog exp) = simplifyBasic (ELog (sw exp))
+simplify (EExp exp) = simplifyBasic (EExp (sw exp))
 
--- Ako se ne uklapa u prethodne sablone
+-- Ako se ne uklapa u prethodne sablone (da li je neophodno?)
 simplify exp = simplifyBasic exp
 
-sw x = (if (x == (simplify  $ normalize x)) then x else sw (simplify $ normalize x))
+sw x = (if (x == (simplify $ normalize x)) then x else sw (simplify $ normalize x))
