@@ -4,48 +4,48 @@ import Expression
 import Normalization
 
 simplifyBasic :: Exp -> Exp
---Sabiranje  s nulom 
-simplifyBasic (EAdd exp (ENum 0)) = exp
-simplifyBasic (EAdd (ENum 0) exp) = exp
 
+-- aritmeticke operacije i stepenovanje nad brojevima (konstantama)
 simplifyBasic (EAdd (ENum x) (ENum y)) = ENum (x+y)
+simplifyBasic (EMul (ENum x) (ENum y)) = ENum (x*y)
+simplifyBasic (EDiv (ENum x) (ENum y)) = ENum (x/y)
+simplifyBasic (ESub (ENum x) (ENum y)) = ENum (x-y)
+simplifyBasic (EPow (ENum x) (ENum y)) = ENum (x**y)
 
+--Sabiranje  s nulom 
+simplifyBasic (EAdd exp (ENum 0)) = simplify exp
+simplifyBasic (EAdd (ENum 0) exp) = simplify exp
 
 -- Oduzimanje nule i od nule
-simplifyBasic (ESub exp (ENum 0)) = exp
-simplifyBasic (ESub (ENum 0) exp) = ENeg exp 
-simplifyBasic (ESub exp1 (ENeg exp2)) = EAdd exp1 exp2
-
-simplifyBasic (ESub (ENum x) (ENum y)) = ENum (x-y)
+simplifyBasic (ESub exp (ENum 0)) = simplify exp
+simplifyBasic (ESub (ENum 0) exp) = ENeg (simplify exp)
+simplifyBasic (ESub exp1 (ENeg exp2)) = EAdd (simplify exp1) (simplify exp2)
 
 --Mnozenje nulom
 simplifyBasic (EMul (ENum 0) exp) = ENum 0
 simplifyBasic (EMul exp (ENum 0)) = ENum 0
 
-
 --Mnozenje i deljenje jedinicom
-simplifyBasic (EMul (ENum 1) exp) = exp
-simplifyBasic (EMul exp (ENum 1)) = exp
-simplifyBasic (EDiv exp (ENum 1)) = exp
+simplifyBasic (EMul (ENum 1) exp) = simplify exp
+simplifyBasic (EMul exp (ENum 1)) = simplify exp
+simplifyBasic (EDiv exp (ENum 1)) = simplify exp
 
-simplifyBasic (EMul (ENum x) (ENum y)) = ENum (x*y)
-simplifyBasic (EDiv (ENum x) (ENum y)) = ENum (x/y)
 
 -- Stepenovanje jedinicom
 -- Dodati stepenovanje nulom, uz neke provere?
-simplifyBasic (EPow exp (ENum 1)) = exp
+simplifyBasic (EPow exp (ENum 1)) = simplify exp
 
 -- Neparnost sinusa i parnost kosinusa
-simplifyBasic (ESin (ENeg exp)) = ENeg (ESin exp)
-simplifyBasic (ECos (ENeg exp)) = ECos exp
+simplifyBasic (ESin (ENeg exp)) = ENeg (ESin (simplify exp))
+simplifyBasic (ECos (ENeg exp)) = ECos (simplify exp)
 
 -- sin(x)^2 + cos(x)^2 = 1
 -- Ovde moramo proveriti da li su exp1 i exp2 jednaki bolje; o tom potom
 simplifyBasic (EAdd (EPow (ESin exp1) (ENum 2)) (EPow (ECos exp2) (ENum 2))) = 
-                            if (exp1 == exp2) then (ENum 1) 
+                            if ((normalize exp1) == (normalize exp2)) then (ENum 1) 
                             else (EAdd (EPow (ESin exp1) (ENum 2)) (EPow (ECos exp2) (ENum 2)))
 simplifyBasic (EAdd (EPow (ECos exp1) (ENum 2)) (EPow (ESin exp2) (ENum 2))) = 
-                            if (exp1 == exp2) then (ENum 1) 
+                            if ((normalize exp1) == (normalize exp2)) then (ENum 1) 
                             else (EAdd (EPow (ECos exp1) (ENum 2)) (EPow (ESin exp2) (ENum 2)))
 
 -- Skracivanje minusa pri deljenju i mnozenju
@@ -117,6 +117,20 @@ simplify (EDiv exp1 exp2) =
 simplify (ENeg exp) = simplifyBasic (ENeg $ simplify exp)
 
 
+-- Ovo moze i ne mora (ako je argument sinusa/kosinusa numericka vrednost van [-pi, pi], ubaciti u dati interval)
+simplify exp@(ESin (ENum a)) = if (a > pi) then (simplify (ESin (ENum (a-pi)))) else
+                                                                          (if (a < -pi) then (simplify (ESin (ENum (a+pi)))) else exp)
+
+simplify exp@(ECos (ENum a)) = if (a > pi) then (simplify (ECos (ENum (a-pi)))) else
+                                                                          (if (a < -pi) then (simplify (ECos (ENum (a+pi)))) else exp)
+
+-- ostali slucajevi
+simplify (EPow exp1 exp2) = simplifyBasic (EPow (simplify exp1) (simplify exp2))
+simplify (ESin exp) = simplifyBasic (ESin (simplify exp))
+simplify (ECos exp) = simplifyBasic (ECos (simplify exp))
+--ova dva nikad 
+simplify (ELog exp) = simplifyBasic (ELog (simplify exp))
+simplify (EExp exp) = simplifyBasic (EExp (simplify exp))
 
 -- Ako se ne uklapa u prethodne sablone
 simplify exp = simplifyBasic exp

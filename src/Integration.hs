@@ -7,6 +7,7 @@ import Expression
 -- dodati konstantu (kad se radi neka komplikovanija integracija, mozda zatreba)
 -- fali apsolutna vrednost za integraciju
 -- e^nesto se ne parsira
+
 integrate :: Exp -> Either EvalError Exp
 integrate exp = case integrate' exp of
 					Nothing -> Left IntegrationFailure
@@ -53,10 +54,10 @@ integrate' (EPow (EAdd (EMul (ENum a) (EVar s)) (ENum b)) (ENum n)) = Just (EDiv
 -- c/(ax+b)
 integrate' (EDiv (ENum c) (EAdd (EMul (ENum a) (EVar s)) (ENum b))) = Just (EMul (ENum (c/a)) (ELog (EAdd (EMul (ENum a) (EVar s)) (ENum b))))
 
+integrate' m@(EExp (EVar s)) = Just m 
+
 -- e^(ax)
 integrate' (EExp (EMul (ENum a) (EVar s))) = Just (EMul (ENum (1/a)) (EExp (EMul (ENum a) (EVar s))))
-
--- f'(x) * e ^(f(x)) ?
 
 -- 	a^x
 integrate' (EPow (ENum a) (EVar s)) = Just (EDiv (EPow (ENum a) (EVar s)) (ENum (log a)))
