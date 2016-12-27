@@ -12,6 +12,8 @@ import           Expression
 import           Derivation
 import 			     Control.Monad.Except
 import           Simplification
+import           Integration
+import 			 Normalization
 
 sc :: Parser () -- ‘sc’ stands for “space consumer”
 sc = let lineComment  = L.skipLineComment "//"
@@ -57,19 +59,22 @@ expr = makeExprParser term table <?> "expression"
 parseExp = parse expr ""
 
 
-
-
-
 evalString :: String -> Either EvalError Exp
 evalString s = do
   exp <- first (const Expression.ParseError) $ parseExp s
-  return $ simplify exp
+  return $ sw $ normalize exp
 
 evalDer :: String -> Either EvalError Exp
 evalDer s = do
 	exp <- first (const Expression.ParseError) $ parseExp s
-	e <- derive exp
-	return $ simplify e
+	e <- derive $ normalize exp
+	return  $ sw e
+
+evalInt :: String -> Either EvalError Exp
+evalInt s = do
+	exp <- first (const Expression.ParseError) $ parseExp s
+	e <- integrate $ normalize exp
+	return $ sw e
 
 main :: IO ()
 main = runInputT defaultSettings loop
@@ -80,7 +85,12 @@ main = runInputT defaultSettings loop
       ; case minput of
           Nothing -> return ()
           Just "quit" -> return ()
-          Just ('d':rest) -> do { case evalDer rest of
+          Just ('d':'e':'r':rest) -> do { case evalDer $ trim rest of
+	  				                Left msg -> outputStrLn $ show msg
+	  				                Right exp -> outputStrLn $ show exp
+	  				            ; loop
+	  				            }
+          Just ('i':'n':'t':rest) -> do { case evalInt $ trim rest of
 	  				                Left msg -> outputStrLn $ show msg
 	  				                Right exp -> outputStrLn $ show exp
 	  				            ; loop
@@ -127,3 +137,7 @@ main = runInputT defaultSettings loop
 -- U tutorijalu rade nesto slicno. Negde ce da zakomplikuje, a negde ce biti jednostavnije.
 dubinaDrveta :: Exp -> Int
 dubinaDrveta e = 1
+
+
+trim s = dropWhile (flip elem " \t") s
+testSimplify x = sw x == (simplify x)

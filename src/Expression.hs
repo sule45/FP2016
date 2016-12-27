@@ -17,15 +17,34 @@ data Exp  = EAdd Exp Exp
 
 data EvalError = DivideByZero
                | ParseError
+               | IntegrationFailure
                  deriving Show
 
 
 instance Show Exp where
+	-- neki spec slucajevi za mnozenje i deljenje 
+	show (EMul m1@(EAdd exp1 exp2) m2@(EAdd exp3 exp4)) = "(" ++ show m1 ++ ")*("  ++ show m2 ++ ")" 
+	show (EMul m1 m2@(EAdd exp3 exp4)) = show m1 ++ "*("  ++ show m2 ++ ")" 
+	show (EMul m1@(EAdd exp1 exp2) m2) = "(" ++ show m1 ++ ")*" ++ show m2 
+
+	show (EMul m1@(ESub exp1 exp2) m2@(ESub exp3 exp4)) = "(" ++ show m1 ++ ")*("  ++ show m2 ++ ")" 
+	show (EMul m1 m2@(ESub exp3 exp4)) = show m1 ++ "*("  ++ show m2 ++ ")" 
+	show (EMul m1@(ESub exp1 exp2) m2) = "(" ++ show m1 ++ ")*" ++ show m2 
+
+	show (EDiv m1@(EAdd exp1 exp2) m2@(EAdd exp3 exp4)) = "(" ++ show m1 ++ ")/("  ++ show m2 ++ ")" 
+	show (EDiv m1 m2@(EAdd exp3 exp4)) = show m1 ++ "/("  ++ show m2 ++ ")" 
+	show (EDiv m1@(EAdd exp1 exp2) m2) = "(" ++ show m1 ++ ")/" ++ show m2 
+
+	show (EDiv m1@(ESub exp1 exp2) m2@(ESub exp3 exp4)) = "(" ++ show m1 ++ ")/("  ++ show m2 ++ ")" 
+	show (EDiv m1 m2@(ESub exp3 exp4)) = show m1 ++ "/("  ++ show m2 ++ ")" 
+	show (EDiv m1@(ESub exp1 exp2) m2) = "(" ++ show m1 ++ ")/" ++ show m2 
+
+	-- uopsteno
 	show (EAdd expr1 expr2) = show expr1 ++ "+" ++ show expr2
 	show (EMul expr1 expr2) = show expr1 ++ "*" ++ show expr2
 	show (ESub expr1 expr2) = show expr1 ++ "-" ++ show expr2
 	show (EDiv expr1 expr2) = show expr1 ++ "/" ++ show expr2
-	show (EPow expr1 expr2) = show expr1 ++ "*" ++ show expr2
+	show (EPow expr1 expr2) = show expr1 ++ "^" ++ show expr2
 	show (ELog expr) = "ln("  ++ show expr ++ ")"
 	show (ESin expr) = "sin(" ++ show expr ++ ")"
 	show (ECos expr) = "cos(" ++ show expr ++ ")"
