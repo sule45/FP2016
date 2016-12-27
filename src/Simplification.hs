@@ -49,13 +49,13 @@ simplifyBasic (EAdd (EPow (ECos exp1) (ENum 2)) (EPow (ESin exp2) (ENum 2))) =
                             else (EAdd (EPow (ECos exp1) (ENum 2)) (EPow (ESin exp2) (ENum 2)))
 
 -- Skracivanje minusa pri deljenju i mnozenju
-simplifyBasic (EDiv (ENeg exp1) (ENeg exp2)) = (EDiv exp1 exp2)
-simplifyBasic (EMul (ENeg exp1) (ENeg exp2)) = (EMul exp1 exp2)
+simplifyBasic (EDiv (ENeg exp1) (ENeg exp2)) = (EDiv (simplify exp1) (simplify exp2))
+simplifyBasic (EMul (ENeg exp1) (ENeg exp2)) = (EMul (simplify exp1) (simplify exp2))
 
 -- f(x)/f(x) se ponasa kao 1 (sem u nulama funkcije f)
 simplifyBasic (EDiv exp1 exp2) = 
-            if (exp1 == exp2) then (ENum 1)
-            else (EDiv exp1 exp2)
+            if ((sw exp1) == (sw exp2)) then (ENum 1)
+            else (EDiv (sw exp1) (sw exp2))
 
 -- Negacija negativnog broja ; razmisliti da li ovo zadrzavamo
 simplifyBasic (ENeg (ENum num)) = ENum (-num)
@@ -85,6 +85,8 @@ simplify (EAdd (EAdd (ENum a) exp1) (EAdd (ENum b) exp2)) = simplifyBasic (EAdd 
 simplify e@(EAdd (EMul (ENum a) exp1) (EMul (ENum b) exp2)) = if (exp1 == exp2) then (EMul (ENum (a+b)) (sw exp1)) else simplifyBasic e
 simplify e@(EAdd exp1 (EMul (ENum a) exp2)) = if (exp1 == exp2) then (simplifyBasic (EMul (ENum (a+1)) (sw exp1))) else simplifyBasic e
 
+
+
 -- Ovo na dno, specificnije cemo prvo ispitati
 -- Sabiranje
 simplify (EAdd exp1 exp2) = 
@@ -95,21 +97,21 @@ simplify (EAdd exp1 exp2) =
 
 -- Oduzimanje
 simplify (ESub exp1 exp2) = 
-						  let levi = simplify exp1
-						      desni = simplify exp2
+						  let levi = sw exp1
+						      desni = sw exp2
 						  in (if (levi == desni) then (ENum 0) else (simplifyBasic (ESub levi desni)))
 
 
 -- Mnozenje
 simplify (EMul exp1 exp2) = 
-                          let levi = simplify exp1
-                              desni = simplify exp2
-                          in  simplifyBasic (EMul levi desni)
+                          let levi = simplifyBasic exp1
+                              desni = simplifyBasic exp2
+                          in  (EMul levi desni)
 
 --Deljenje
 simplify (EDiv exp1 exp2) = 
-                          let levi = simplify exp1
-                              desni = simplify exp2
+                          let levi = sw exp1
+                              desni = sw exp2
                           in  simplifyBasic (EDiv levi desni)
 
 -- Negacija
