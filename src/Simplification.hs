@@ -104,9 +104,9 @@ simplify (ESub exp1 exp2) =
 
 -- Mnozenje
 simplify (EMul exp1 exp2) = 
-                          let levi = simplifyBasic exp1
-                              desni = simplifyBasic exp2
-                          in  (EMul levi desni)
+                          let levi = simplify exp1
+                              desni = simplify exp2
+                          in  simplifyBasic (EMul levi desni)
 
 --Deljenje
 simplify (EDiv exp1 exp2) = 
