@@ -46,9 +46,10 @@ simplify (EAdd (EMul (ENum a) exp1) exp2) = if (exp1 == exp2)
                                             then EMul (ENum (a+1)) (simplify exp1)
                                             else EAdd (EMul (ENum a) (simplify exp1)) (simplify exp2)
 
-simplify (EMul (EMul (ENum a) exp1) exp2) = if(exp1 == exp2)
+simplify (EMul exp1 (EMul (ENum a) exp2)) = if(exp1 == exp2)
                                             then (EMul (ENum a) (EPow (simplify exp1) (ENum 2)))
-                                            else (EMul (EMul (ENum a) (simplify exp1)) (simplify exp1))
+                                            else (EMul (simplify exp1) (EMul (ENum a) (simplify exp2)))
+                                        
 
 -- Stepenovanje jedinicom
 -- Dodati stepenovanje nulom, uz neke provere?

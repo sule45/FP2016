@@ -4,13 +4,19 @@ import               Expression
 
 normalize :: Exp -> Exp
 
-normalize (EAdd exp (ENum a)) = EAdd (ENum a) $ normalize exp
-normalize (EMul exp (ENum a)) = EMul (ENum a) $ normalize exp
+-- nepotrebno, konstanta ima manju tezinu pa ispliva po donjim sablonima
+-- normalize (EAdd exp (ENum a)) = EAdd (ENum a) $ normalize exp
+-- normalize (EMul exp (ENum a)) = EMul (ENum a) $ normalize exp
+
+-- da li treba za oduzimanje?
 normalize (ESub exp (ENum a)) = EAdd (ENum $ -a) $ normalize exp
-normalize (EDiv exp (ENum a)) = EMul (ENum $ 1/a) $ normalize exp
+normalize (EDiv exp (ENum a)) = if ((expWeight $ normalize exp) > expWeight (ENum a)) 
+	                            then EMul (ENum $ 1/a) $ normalize exp 
+	                            else (EDiv (normalize exp) (ENum a))
 normalize (EAdd exp1 exp2) = if (expWeight exp1 <= expWeight exp2) then (EAdd (normalize exp1) (normalize exp2)) else (EAdd (normalize exp2) (normalize exp1))
 normalize (EMul exp1 exp2) = if (expWeight exp1 <= expWeight exp2) then (EMul (normalize exp1) (normalize exp2)) else (EMul (normalize exp2) (normalize exp1))
 
+-- ostali samo sluze da se normalizuju podizrazi
 normalize (ESub exp1 exp2) = ESub (normalize exp1) (normalize exp2)
 normalize (EDiv exp1 exp2) = EDiv (normalize exp1) (normalize exp2)
 normalize (ENeg exp) = ENeg (normalize exp)
