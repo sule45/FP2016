@@ -8,13 +8,22 @@ normalize (EAdd exp (ENum a)) = EAdd (ENum a) $ normalize exp
 normalize (EMul exp (ENum a)) = EMul (ENum a) $ normalize exp
 normalize (ESub exp (ENum a)) = EAdd (ENum $ -a) $ normalize exp
 normalize (EDiv exp (ENum a)) = EMul (ENum $ 1/a) $ normalize exp
+normalize (EAdd exp1 exp2) = if (expWeight exp1 <= expWeight exp2) then (EAdd (normalize exp1) (normalize exp2)) else (EAdd (normalize exp2) (normalize exp1))
+normalize (EMul exp1 exp2) = if (expWeight exp1 <= expWeight exp2) then (EMul (normalize exp1) (normalize exp2)) else (EMul (normalize exp2) (normalize exp1))
 
-normalize (EAdd exp1 exp2) = if (expWeight exp1 < expWeight exp2) then (EAdd (normalize exp1) (normalize exp2)) else (EAdd (normalize exp2) (normalize exp1))
-normalize (EMul exp1 exp2) = if (expWeight exp1 < expWeight exp2) then (EMul (normalize exp1) (normalize exp2)) else (EMul (normalize exp2) (normalize exp1))
+normalize (ESub exp1 exp2) = ESub (normalize exp1) (normalize exp2)
+normalize (EDiv exp1 exp2) = EDiv (normalize exp1) (normalize exp2)
+normalize (ENeg exp) = ENeg (normalize exp)
+normalize (ESin exp) = ESin (normalize exp)
+normalize (ECos exp) = ECos (normalize exp)
+normalize (ELog exp) = ELog (normalize exp)
+normalize (EExp exp) = EExp (normalize exp)
+normalize (EPow exp1 exp2) = EPow (normalize exp1) (normalize exp2)
+normalize exp@(ENum _) = exp
+normalize exp@(EVar _) = exp
 
-normalize exp = exp
-
-
+-- na ovaj se bunio jer sam pokupio sve konstruktore
+--normalize exp = exp
 
 ---------------------
 addWeight = 5
