@@ -47,7 +47,9 @@ expWeight (EAdd exp1 exp2) = addWeight + (expWeight exp1)/coeff + (expWeight exp
 expWeight (EMul exp1 exp2) = mulWeight + (expWeight exp1)/coeff + (expWeight exp2)/coeff
 expWeight (EDiv exp1 exp2) = divWeight + (expWeight exp1)/coeff + (expWeight exp2)/coeff
 expWeight (ESub exp1 exp2) = subWeight + (expWeight exp1)/coeff + (expWeight exp2)/coeff
-expWeight (ENeg exp) = subWeight*subWeight + (expWeight exp)/coeff
+-- ovo mozda treba doraditi!
+expWeight (ENeg exp) = subWeight + (expWeight exp)/coeff
+--
 expWeight (ESin exp) = unaryWeight + (expWeight exp)/coeff
 expWeight (ECos exp) = unaryWeight + (expWeight exp)/coeff + 1
 expWeight (ELog exp) = unaryWeight + (expWeight exp)/coeff + 2
