@@ -54,9 +54,9 @@ instance Show Exp where
 	show (ENeg (ESin expr)) = "-"   ++ show (ESin expr)
 	show (ENeg (ELog expr)) = "-"   ++ show (ELog expr)
 	show (ENeg (EExp expr)) = "-"   ++ show (EExp expr)
-	show (ENeg (EVar var))  = "-"   ++ show var
+	show (ENeg (EVar var))  = "-"   ++ show (EVar var)
 	show (ENeg (ENum num))  = "-"   ++ show num
 	show (ENeg expr)        = "-("  ++ show expr ++ ")"
 	show (EExp expr)       = "e^("  ++ show expr ++ ")"
 	show (ENum x)   = show x
-	show (EVar s)   = s
+	show (EVar s)   =  s

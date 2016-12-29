@@ -89,6 +89,9 @@ simplify (EMul exp1 (ENeg exp2)) = ENeg (EMul (simplify exp1) (simplify exp2))
 simplify (EAdd (ENeg exp1) (ENeg exp2)) = ENeg (EAdd  (simplify exp1) (simplify exp2))
 -- (-a-(-b)) = -(a-b) ; koristiti ovo?
 --simplify (ESub (ENeg exp1) (ENeg exp2)) = (ENeg (ESub exp1 exp2))
+simplify (ESub (ENeg exp1) exp2) = ENeg (EAdd (simplify exp1) (simplify exp2))
+
+
 -- ako se negacija nadje u zbiru, pretvaramo to u razliku
 simplify (EAdd exp1 (ENeg exp2)) = ESub (simplify exp1) (simplify exp2)
 simplify (EAdd (ENeg exp1) exp2) = ESub (simplify exp2) (simplify exp1)
