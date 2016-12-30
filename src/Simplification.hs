@@ -42,15 +42,24 @@ simplify (EAdd exp1 (EMul (ENum a) exp2)) = if (exp1 == exp2)
                                             else EAdd (simplify exp1) (EMul (ENum a) (simplify exp2))
 
 -- ne znam da li je neophodno jer mnozenje uvecava tezinu izraza pa ode desno pri normalizaciji
+
+
+
 simplify (EAdd (EMul (ENum a) exp1) exp2) = if (exp1 == exp2) 
                                             then EMul (ENum (a+1)) (simplify exp1)
                                             else EAdd (EMul (ENum a) (simplify exp1)) (simplify exp2)
 
+
+simplify (EMul (EMul (ENum a) exp1) (EMul (ENum b) exp2)) = if (exp1 == exp2)
+                                                            then EMul (ENum (a*b)) (EPow (simplify exp1) (ENum 2))
+                                                            else EMul (ENum (a*b))	 (EMul (simplify exp1) (simplify exp2))
+
+
+                                        
+simplify (EMul (ENum a) (EMul (ENum b) exp1)) = EMul (ENum (a*b)) exp1
 simplify (EMul exp1 (EMul (ENum a) exp2)) = if(exp1 == exp2)
                                             then (EMul (ENum a) (EPow (simplify exp1) (ENum 2)))
                                             else (EMul (simplify exp1) (EMul (ENum a) (simplify exp2)))
-                                        
-
 -- Stepenovanje jedinicom
 -- Dodati stepenovanje nulom, uz neke provere?
 simplify (EPow exp (ENum 1)) = simplify exp

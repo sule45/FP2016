@@ -6,14 +6,15 @@ import           Text.Megaparsec.Char
 import           Text.Megaparsec.Expr
 import qualified Text.Megaparsec.Lexer as L
 import           Text.Megaparsec.String (Parser)
-import 			     Data.Bifunctor
-import 			     System.Console.Haskeline
+import 		 Data.Bifunctor
+import 		 System.Console.Haskeline
 import           Expression
 import           Derivation
-import 			     Control.Monad.Except
+import 		 Control.Monad.Except
 import           Simplification
 import           Integration
-import 			 Normalization
+import 		 Normalization
+import           Data.Char
 
 sc :: Parser () -- ‘sc’ stands for “space consumer”
 sc = let lineComment  = L.skipLineComment "//"
@@ -62,7 +63,7 @@ parseExp = parse expr ""
 evalString :: String -> Either EvalError Exp
 evalString s = do
   exp <- first (const Expression.ParseError) $ parseExp s
-  return $ sw $ normalize exp
+  return $ sw exp
 
 evalDer :: String -> Either EvalError Exp
 evalDer s = do
@@ -140,4 +141,7 @@ dubinaDrveta e = 1
 
 
 trim s = dropWhile (flip elem " \t") s
-testSimplify x = sw x == (simplify x)
+
+isIntegrate x = elem (map toLower x) ["i", "int", "integ", "integrate"]
+isDerive x = elem (map toLower x) ["d", "der", "derive"]
+
