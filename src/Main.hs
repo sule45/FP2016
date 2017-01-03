@@ -86,17 +86,19 @@ main = runInputT defaultSettings loop
       ; case minput of
           Nothing -> return ()
           Just "quit" -> return ()
-          Just ('d':'e':'r':rest) -> do { case evalDer $ trim rest of
+          Just input  -> if isDerive (head (words input)) 
+          	             then do { case evalDer $ trim (dropWhile (/=' ') input) of
 	  				                Left msg -> outputStrLn $ show msg
 	  				                Right exp -> outputStrLn $ show exp
 	  				            ; loop
 	  				            }
-          Just ('i':'n':'t':rest) -> do { case evalInt $ trim rest of
+						 else if isIntegrate (head (words input)) 
+						 	  then do { case evalInt $ trim (dropWhile (/= ' ') input) of
 	  				                Left msg -> outputStrLn $ show msg
 	  				                Right exp -> outputStrLn $ show exp
 	  				            ; loop
 	  				            }
-          Just input -> do { case evalString input of
+          				 else do { case evalString input of
                                Left msg -> outputStrLn $ show msg
                                Right exp -> outputStrLn $ show exp
                            ; loop
@@ -136,9 +138,9 @@ main = runInputT defaultSettings loop
 
 -- MOZDA treba rastaviti na binarne i unarne operatore, da bi ovakve funkcije bile jednostavnije.
 -- U tutorijalu rade nesto slicno. Negde ce da zakomplikuje, a negde ce biti jednostavnije.
-dubinaDrveta :: Exp -> Int
-dubinaDrveta e = 1
 
+-- dubinaDrveta :: Exp -> Int
+-- dubinaDrveta e = 1
 
 trim s = dropWhile (flip elem " \t") s
 

@@ -45,6 +45,7 @@ instance Show Exp where
 	show (ESub expr1 expr2) = show expr1 ++ "-" ++ show expr2
 	show (EDiv expr1 expr2) = show expr1 ++ "/" ++ show expr2
 	-- dodao zagrade jer me mrzelo da pisem sve slucajeve kad treba da se dodaju
+	show (EPow expr1 (ENum a)) = "(" ++ show expr1 ++ ")^" ++ show a
 	show (EPow expr1 expr2) = "(" ++ show expr1 ++ ")^(" ++ show expr2 ++ ")"
 	show (ELog expr) = "ln("  ++ show expr ++ ")"
 	show (ESin expr) = "sin(" ++ show expr ++ ")"

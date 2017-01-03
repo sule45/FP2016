@@ -23,14 +23,14 @@ simplify (ESub exp1 (ENeg exp2)) = EAdd (simplify exp1) (simplify exp2)
 
 --Mnozenje nulom
 simplify (EMul (ENum 0) exp) = ENum 0
-simplify (EMul exp (ENum 0)) = ENum 0
+simplify (EMul exp (ENum 0)) = ENum 0  
 
 --Mnozenje i deljenje jedinicom
 simplify (EMul (ENum 1) exp) = simplify exp
 simplify (EMul exp (ENum 1)) = simplify exp
 simplify (EDiv exp (ENum 1)) = simplify exp
 
---skracivanje konstanti u izrazima (ako sabiramo sa umnoskom tog izraza, dodati jedan tom umnosku)
+--skracivanje konstanti u izrazima (ako sabiramo sa umnoskom tog izraza, dodati jedan tom umnosku) 
 simplify (EAdd (ENum a) (EAdd (ENum b) exp)) = EAdd (ENum (a+b)) (simplify exp)
 simplify (EAdd (EAdd (ENum a) exp1) (EAdd (ENum b) exp2)) = EAdd (ENum (a+b)) (simplify (EAdd (simplify exp1) (simplify exp2)))
 
@@ -52,7 +52,7 @@ simplify (EAdd (EMul (ENum a) exp1) exp2) = if (exp1 == exp2)
 
 simplify (EMul (EMul (ENum a) exp1) (EMul (ENum b) exp2)) = if (exp1 == exp2)
                                                             then EMul (ENum (a*b)) (EPow (simplify exp1) (ENum 2))
-                                                            else EMul (ENum (a*b))	 (EMul (simplify exp1) (simplify exp2))
+                                                            else EMul (ENum (a*b)) (EMul (simplify exp1) (simplify exp2))
 
 
                                         
@@ -171,6 +171,6 @@ simplify exp = exp
 sw x = 
   let simplified = simplify $ normalize x
         in 
-        if(simplified == x) then x
+        if (simplified == x) then x
         else  sw simplified
   --(if (x == (simplify  x)) then x else sw (simplify  x))
