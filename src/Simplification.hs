@@ -33,6 +33,8 @@ simplify (EMul (ENum 1) exp) = simplify exp
 simplify (EMul exp (ENum 1)) = simplify exp
 simplify (EDiv exp (ENum 1)) = simplify exp
 
+simplify (EDiv (ENum 0) exp) = ENum 0
+
 --skracivanje konstanti u izrazima (ako sabiramo sa umnoskom tog izraza, dodati jedan tom umnosku, itd) 
 simplify (EAdd (ENum a) (EAdd (ENum b) exp)) = EAdd (ENum (a+b)) (simplify exp)
 simplify (EAdd (EAdd (ENum a) exp1) (EAdd (ENum b) exp2)) = EAdd (ENum (a+b)) (simplify (EAdd (simplify exp1) (simplify exp2)))
@@ -122,7 +124,15 @@ simplify exp@(ECos (ENum a)) = if (a > pi)
                                      then (simplify (ECos (ENum (a+pi)))) 
                                      else exp)
 
+-- sabiranje i oduzimanje s istim deliocem
+simplify (EAdd (EDiv exp1 exp2) (EDiv exp3 exp4)) = if (exp2 == exp4) 
+                                                    then (EDiv (simplify (EAdd (simplify exp1) (simplify exp3))) (simplify exp4))
+                                                    else (EAdd (EDiv (simplify exp1) (simplify exp2)) (EDiv (simplify exp3) (simplify exp4)))
+simplify (ESub (EDiv exp1 exp2) (EDiv exp3 exp4)) = if (exp2 == exp4) 
+                                                    then (EDiv (simplify (ESub (simplify exp1) (simplify exp3))) (simplify exp4))
+                                                    else (ESub (EDiv (simplify exp1) (simplify exp2)) (EDiv (simplify exp3) (simplify exp4)))
 
+-- log(a^b) = b*log(a)
 simplify (ELog (EPow exp1 exp2)) = (EMul (simplify exp2) (ELog (simplify exp1)))
 
 --------------------------------------------
@@ -164,12 +174,8 @@ simplify (EDiv exp1 exp2) =
               if (e1 == e2) then (ENum 1)
               else (EDiv e1 e2)
 
--- Negacija
-simplify (ENeg exp) = ENeg  (simplify exp)
-
-
-
 -- ostali slucajevi
+simplify (ENeg exp) = ENeg  (simplify exp)
 simplify (EPow exp1 exp2) = EPow (simplify exp1) (simplify exp2)
 simplify (ESin exp) = ESin (simplify exp)
 simplify (ECos exp) = ECos (simplify exp) 
