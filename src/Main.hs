@@ -63,19 +63,19 @@ parseExp = parse expr ""
 evalString :: String -> Either EvalError Exp
 evalString s = do
   exp <- first (const Expression.ParseError) $ parseExp s
-  return $ sw exp
+  return $ simplifyConverge exp
 
 evalDer :: String -> Either EvalError Exp
 evalDer s = do
 	exp <- first (const Expression.ParseError) $ parseExp s
 	e <- derive $ normalize exp
-	return  $ sw e
+	return  $ simplifyConverge e
 
 evalInt :: String -> Either EvalError Exp
 evalInt s = do
 	exp <- first (const Expression.ParseError) $ parseExp s
 	e <- integrate $ normalize exp
-	return $ sw e
+	return $ simplifyConverge e
 
 main :: IO ()
 main = runInputT defaultSettings loop
@@ -104,43 +104,6 @@ main = runInputT defaultSettings loop
                            ; loop
                            }
 	  }
-
--- trenutno ne radi nista ova funkija
--- eval :: Exp -> Either EvalError Integer
--- eval (EAdd exp1 exp2) = do
---   v1 <- eval exp1
---   v2 <- eval exp2
---   return $ v1 + v2
--- eval (ESub exp1 exp2) = do
---   v1 <- eval exp1
---   v2 <- eval exp2
---   return $ v1 - v2
--- eval (EMul exp1 exp2) = do
---   v1 <- eval exp1
---   v2 <- eval exp2
---   return $ v1 * v2
--- eval (EPow exp1 exp2) = do
---   v1 <- eval exp1
---   v2 <- eval exp2
---   return $ v1^v2
--- eval (EDiv exp1 exp2) = do
---   dividend <- eval exp1
---   divisor <- eval exp2
---   if divisor == 0
---     then throwError DivideByZero
---     else return $ dividend `div` divisor
--- eval (ENum n) = Right n
-
---prvi patt. match je x' = 1, ali valja ga promeniti. Mozda moze da postoji
--- komanda kojom se zadaje promenljiva po kojoj se sledeci izvod trazi
-
-
-
--- MOZDA treba rastaviti na binarne i unarne operatore, da bi ovakve funkcije bile jednostavnije.
--- U tutorijalu rade nesto slicno. Negde ce da zakomplikuje, a negde ce biti jednostavnije.
-
--- dubinaDrveta :: Exp -> Int
--- dubinaDrveta e = 1
 
 trim s = dropWhile (flip elem " \t") s
 

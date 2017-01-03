@@ -33,6 +33,15 @@ integrate' (ESub exp1 exp2) = case (integrate' exp1, integrate' exp2) of
                                              (_, Nothing) -> Nothing
                                              (Just exp1', Just exp2') -> (Just (ESub exp1' exp2'))
 
+-- cosx
+integrate' (ECos (EVar s)) = Just (ESin (EVar s))
+integrate' (ECos (EMul (ENum a) (EVar s))) = Just (EMul (ENum (1/a)) (ESin (EMul (ENum a) (EVar s))))
+
+-- sinx
+integrate' (ESin (EVar s)) = Just (ENeg (ECos (EVar s)))
+integrate' (ESin (EMul (ENum a) (EVar s))) = Just (ENeg (EMul (ENum (1/a)) (ECos (EMul (ENum a) (EVar s)))))
+
+
 -- 1/x
 integrate' (EDiv (ENum 1) (EVar s)) = Just (ELog (EVar s)) 
 integrate' (EPow (EVar s) (ENum (-1))) = Just (ELog (EVar s))  

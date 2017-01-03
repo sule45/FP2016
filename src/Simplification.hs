@@ -10,6 +10,9 @@ simplify (EAdd (ENum x) (ENum y)) = ENum (x+y)
 simplify (EMul (ENum x) (ENum y)) = ENum (x*y)
 simplify (EDiv (ENum x) (ENum y)) = ENum (x/y)
 simplify (ESub (ENum x) (ENum y)) = ENum (x-y)
+
+-- 0^0 je nedefinisano
+simplify exp@(EPow (ENum 0) (ENum 0)) = exp
 simplify (EPow (ENum x) (ENum y)) = ENum (x**y)
 
 --Sabiranje  s nulom 
@@ -30,7 +33,7 @@ simplify (EMul (ENum 1) exp) = simplify exp
 simplify (EMul exp (ENum 1)) = simplify exp
 simplify (EDiv exp (ENum 1)) = simplify exp
 
---skracivanje konstanti u izrazima (ako sabiramo sa umnoskom tog izraza, dodati jedan tom umnosku) 
+--skracivanje konstanti u izrazima (ako sabiramo sa umnoskom tog izraza, dodati jedan tom umnosku, itd) 
 simplify (EAdd (ENum a) (EAdd (ENum b) exp)) = EAdd (ENum (a+b)) (simplify exp)
 simplify (EAdd (EAdd (ENum a) exp1) (EAdd (ENum b) exp2)) = EAdd (ENum (a+b)) (simplify (EAdd (simplify exp1) (simplify exp2)))
 
@@ -41,10 +44,7 @@ simplify (EAdd exp1 (EMul (ENum a) exp2)) = if (exp1 == exp2)
                                             then EMul (ENum (a+1)) (simplify exp1)
                                             else EAdd (simplify exp1) (EMul (ENum a) (simplify exp2))
 
--- ne znam da li je neophodno jer mnozenje uvecava tezinu izraza pa ode desno pri normalizaciji
-
-
-
+--
 simplify (EAdd (EMul (ENum a) exp1) exp2) = if (exp1 == exp2) 
                                             then EMul (ENum (a+1)) (simplify exp1)
                                             else EAdd (EMul (ENum a) (simplify exp1)) (simplify exp2)
@@ -54,23 +54,31 @@ simplify (EMul (EMul (ENum a) exp1) (EMul (ENum b) exp2)) = if (exp1 == exp2)
                                                             then EMul (ENum (a*b)) (EPow (simplify exp1) (ENum 2))
                                                             else EMul (ENum (a*b)) (EMul (simplify exp1) (simplify exp2))
 
-
-                                        
 simplify (EMul (ENum a) (EMul (ENum b) exp1)) = EMul (ENum (a*b)) exp1
 simplify (EMul exp1 (EMul (ENum a) exp2)) = if(exp1 == exp2)
                                             then (EMul (ENum a) (EPow (simplify exp1) (ENum 2)))
                                             else (EMul (simplify exp1) (EMul (ENum a) (simplify exp2)))
+
+-- ako imamo mnozenje izraza sa stepenom tog izraza, mozemo da pojednostavimo izraz
+simplify (EMul (EPow exp1 expPow1) (EPow exp2 expPow2)) = if (exp1 == exp2)
+                                                          then EPow (simplify exp1) (simplify (EAdd (simplify expPow1) (simplify expPow2)))
+                                                          else EMul (EPow (simplify exp1) (simplify expPow1)) (EPow (simplify exp2) (simplify expPow2))
+
+simplify (EMul exp1 (EPow exp2 expPow)) = if (exp1 == exp2)
+                                          then (EPow (simplify exp1) (simplify (EAdd (ENum 1) expPow)))
+                                          else (EMul (simplify exp1) (EPow (simplify exp2) (simplify expPow)))
+
 -- Stepenovanje jedinicom
 -- Dodati stepenovanje nulom, uz neke provere?
 simplify (EPow exp (ENum 1)) = simplify exp
+simplify (EPow (ENum 0) exp) = ENum 0
+simplify (EPow exp (ENum 0)) = (ENum 1)
 
 -- Neparnost sinusa i parnost kosinusa
 simplify (ESin (ENeg exp)) = ENeg (ESin (simplify exp))
 simplify (ECos (ENeg exp)) = ECos (simplify exp)
 
 -- sin(x)^2 + cos(x)^2 = 1
--- Ovde moramo proveriti da li su exp1 i exp2 jednaki bolje; o tom potom
--- normalizacija se obavlja u rekurziji svaki put
 simplify (EAdd (EPow (ESin exp1) (ENum 2)) (EPow (ECos exp2) (ENum 2))) = 
                             if (exp1 == exp2) 
                             then ENum 1
@@ -85,21 +93,17 @@ simplify (EAdd (EPow (ECos exp1) (ENum 2)) (EPow (ESin exp2) (ENum 2))) =
 simplify (EDiv (ENeg exp1) (ENeg exp2)) = EDiv (simplify exp1) (simplify exp2)
 simplify (EMul (ENeg exp1) (ENeg exp2)) = EMul (simplify exp1) (simplify exp2)
 
-
-
--- Negacija negativnog broja ; razmisliti da li ovo zadrzavamo
+-- Negacija negativnog broja 
 simplify (ENeg (ENum num)) = ENum (-num)
 simplify (ENeg (ENeg exp)) = simplify exp
 
 -- Minus izvlacimo ispred zagrada
 simplify (EMul (ENeg exp1) exp2) = ENeg (EMul (simplify exp1) (simplify exp2))
 simplify (EMul exp1 (ENeg exp2)) = ENeg (EMul (simplify exp1) (simplify exp2))
-
 simplify (EAdd (ENeg exp1) (ENeg exp2)) = ENeg (EAdd  (simplify exp1) (simplify exp2))
--- (-a-(-b)) = -(a-b) ; koristiti ovo?
+
 --simplify (ESub (ENeg exp1) (ENeg exp2)) = (ENeg (ESub exp1 exp2))
 simplify (ESub (ENeg exp1) exp2) = ENeg (EAdd (simplify exp1) (simplify exp2))
-
 
 -- ako se negacija nadje u zbiru, pretvaramo to u razliku
 simplify (EAdd exp1 (ENeg exp2)) = ESub (simplify exp1) (simplify exp2)
@@ -118,7 +122,13 @@ simplify exp@(ECos (ENum a)) = if (a > pi)
                                      then (simplify (ECos (ENum (a+pi)))) 
                                      else exp)
 
--- Ovo na dno, specificnije cemo prvo ispitati
+
+simplify (ELog (EPow exp1 exp2)) = (EMul (simplify exp2) (ELog (simplify exp1)))
+
+--------------------------------------------
+-- Ovo na dno, specificnije prvo ispitati --
+--------------------------------------------
+
 -- Sabiranje
 simplify (EAdd exp1 exp2) = 
                           let levi = simplify exp1
@@ -127,7 +137,6 @@ simplify (EAdd exp1 exp2) =
                             if (levi == desni) 
                             then EMul (ENum 2) levi
                             else EAdd levi desni
-
 
 -- Oduzimanje
 simplify (ESub exp1 exp2) = 
@@ -138,14 +147,15 @@ simplify (ESub exp1 exp2) =
                 then (ENum 0) 
                 else (ESub levi desni)
 
-
 -- Mnozenje
 simplify exp@(EMul exp1 exp2) = 
                           let levi = simplify exp1
                               desni = simplify exp2
-                          in  EMul levi desni
+                          in if (levi == desni)
+                             then EPow levi (ENum 2)
+                             else  EMul levi desni
 
---Deljenje
+-- Deljenje
 -- f(x)/f(x) se ponasa kao 1 (sem u nulama funkcije f)
 simplify (EDiv exp1 exp2) = 
             let e1 = simplify exp1
@@ -157,20 +167,21 @@ simplify (EDiv exp1 exp2) =
 -- Negacija
 simplify (ENeg exp) = ENeg  (simplify exp)
 
+
+
 -- ostali slucajevi
 simplify (EPow exp1 exp2) = EPow (simplify exp1) (simplify exp2)
 simplify (ESin exp) = ESin (simplify exp)
-simplify (ECos exp) = ECos (simplify exp)
---ova dva nikad 
+simplify (ECos exp) = ECos (simplify exp) 
 simplify (ELog exp) = ELog (simplify exp)
 simplify (EExp exp) = EExp (simplify exp)
 
--- Ako se ne uklapa u prethodne sablone (da li je neophodno?)
+-- Ako se ne uklapa u prethodne sablone
 simplify exp = exp
 
-sw x = 
+-- Pokusavamo da pojednostavimo izraz sve dok se desava neka promena
+simplifyConverge x = 
   let simplified = simplify $ normalize x
         in 
         if (simplified == x) then x
-        else  sw simplified
-  --(if (x == (simplify  x)) then x else sw (simplify  x))
+        else  simplifyConverge simplified

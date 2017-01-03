@@ -22,7 +22,7 @@ data EvalError = DivideByZero
 
 
 instance Show Exp where
-	-- neki spec slucajevi za mnozenje i deljenje 
+	-- neki specijalni slucajevi za mnozenje i deljenje 
 	show (EMul m1@(EAdd exp1 exp2) m2@(EAdd exp3 exp4)) = "(" ++ show m1 ++ ")*("  ++ show m2 ++ ")" 
 	show (EMul m1 m2@(EAdd exp3 exp4)) = show m1 ++ "*("  ++ show m2 ++ ")" 
 	show (EMul m1@(EAdd exp1 exp2) m2) = "(" ++ show m1 ++ ")*" ++ show m2 
@@ -44,10 +44,10 @@ instance Show Exp where
 	show (EMul expr1 expr2) = show expr1 ++ "*" ++ show expr2
 	show (ESub expr1 expr2) = show expr1 ++ "-" ++ show expr2
 	show (EDiv expr1 expr2) = show expr1 ++ "/" ++ show expr2
-	-- dodao zagrade jer me mrzelo da pisem sve slucajeve kad treba da se dodaju
+	-- dodao zagrade jer je previse pisati sve slucajeve
 	show (EPow expr1 (ENum a)) = "(" ++ show expr1 ++ ")^" ++ show a
 	show (EPow expr1 expr2) = "(" ++ show expr1 ++ ")^(" ++ show expr2 ++ ")"
-	show (ELog expr) = "ln("  ++ show expr ++ ")"
+	show (ELog expr) = "log("  ++ show expr ++ ")"
 	show (ESin expr) = "sin(" ++ show expr ++ ")"
 	show (ECos expr) = "cos(" ++ show expr ++ ")"
 	----------------
