@@ -135,6 +135,8 @@ simplify (ESub (EDiv exp1 exp2) (EDiv exp3 exp4)) = if (exp2 == exp4)
 -- log(a^b) = b*log(a)
 simplify (ELog (EPow exp1 exp2)) = (EMul (simplify exp2) (ELog (simplify exp1)))
 
+-- (x^y)^z = x^(y*z)
+simplify(EPow (EPow exp1 exp2) exp3) = EPow (simplify exp1) (simplify (EMul (simplify exp2) (simplify exp3)))
 --------------------------------------------
 -- Ovo na dno, specificnije prvo ispitati --
 --------------------------------------------
