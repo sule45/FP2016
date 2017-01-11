@@ -6,6 +6,7 @@ normalize :: Exp -> Exp
 
 
 normalize (ESub exp (ENum a)) = EAdd (ENum $ -a) $ normalize exp
+
 normalize (EDiv exp (ENum a)) = if ((expWeight $ normalize exp) > expWeight (ENum a)) 
 	                            then EMul (ENum $ 1/a) $ normalize exp 
 	                            else (EDiv (normalize exp) (ENum a))

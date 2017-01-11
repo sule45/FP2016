@@ -24,20 +24,20 @@ data EvalError = DivideByZero
 instance Show Exp where
 	-- neki specijalni slucajevi za mnozenje i deljenje 
 	show (EMul m1@(EAdd exp1 exp2) m2@(EAdd exp3 exp4)) = "(" ++ show m1 ++ ")*("  ++ show m2 ++ ")" 
-	show (EMul m1 m2@(EAdd exp3 exp4)) = show m1 ++ "*("  ++ show m2 ++ ")" 
-	show (EMul m1@(EAdd exp1 exp2) m2) = "(" ++ show m1 ++ ")*" ++ show m2 
+	show (EMul m1 m2@(EAdd exp3 exp4)) =                         show m1 ++ "*("  ++  show m2 ++ ")" 
+	show (EMul m1@(EAdd exp1 exp2) m2) =                  "(" ++ show m1 ++ ")*" ++   show m2 
 
 	show (EMul m1@(ESub exp1 exp2) m2@(ESub exp3 exp4)) = "(" ++ show m1 ++ ")*("  ++ show m2 ++ ")" 
-	show (EMul m1 m2@(ESub exp3 exp4)) = show m1 ++ "*("  ++ show m2 ++ ")" 
-	show (EMul m1@(ESub exp1 exp2) m2) = "(" ++ show m1 ++ ")*" ++ show m2 
+	show (EMul m1 m2@(ESub exp3 exp4)) =                         show m1 ++ "*("  ++  show m2 ++ ")" 
+	show (EMul m1@(ESub exp1 exp2) m2) =                  "(" ++ show m1 ++ ")*" ++   show m2 
 
 	show (EDiv m1@(EAdd exp1 exp2) m2@(EAdd exp3 exp4)) = "(" ++ show m1 ++ ")/("  ++ show m2 ++ ")" 
-	show (EDiv m1 m2@(EAdd exp3 exp4)) = show m1 ++ "/("  ++ show m2 ++ ")" 
-	show (EDiv m1@(EAdd exp1 exp2) m2) = "(" ++ show m1 ++ ")/" ++ show m2 
+	show (EDiv m1 m2@(EAdd exp3 exp4)) =                         show m1 ++ "/("  ++  show m2 ++ ")" 
+	show (EDiv m1@(EAdd exp1 exp2) m2) =                  "(" ++ show m1 ++ ")/" ++   show m2 
 
 	show (EDiv m1@(ESub exp1 exp2) m2@(ESub exp3 exp4)) = "(" ++ show m1 ++ ")/("  ++ show m2 ++ ")" 
-	show (EDiv m1 m2@(ESub exp3 exp4)) = show m1 ++ "/("  ++ show m2 ++ ")" 
-	show (EDiv m1@(ESub exp1 exp2) m2) = "(" ++ show m1 ++ ")/" ++ show m2 
+	show (EDiv m1 m2@(ESub exp3 exp4)) =                         show m1 ++ "/("  ++  show m2 ++ ")" 
+	show (EDiv m1@(ESub exp1 exp2) m2) =                  "(" ++ show m1 ++ ")/" ++   show m2 
 
 	-- uopsteno
 	show (EAdd expr1 expr2) = show expr1 ++ "+" ++ show expr2

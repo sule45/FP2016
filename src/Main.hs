@@ -68,13 +68,13 @@ evalString s = do
 evalDer :: String -> Either EvalError Exp
 evalDer s = do
 	exp <- first (const Expression.ParseError) $ parseExp s
-	e <- derive $ normalize exp
-	return  $ simplifyConverge e
+	e <- derive $ simplifyConverge exp
+	return  $ simplify e
 
 evalInt :: String -> Either EvalError Exp
 evalInt s = do
 	exp <- first (const Expression.ParseError) $ parseExp s
-	e <- integrate $ normalize exp
+	e <- integrate $ simplifyConverge exp
 	return $ simplifyConverge e
 
 main :: IO ()

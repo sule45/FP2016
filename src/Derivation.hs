@@ -31,6 +31,9 @@ derive (ELog expr) = do
 derive (EExp expr) = do
 	v <- derive expr
 	return $ EMul (EExp expr) v
+derive (EPow expr (ENum a)) = do
+  v <- derive expr
+  return $ EMul (ENum a) (EMul (EPow expr (ENum (a-1))) v)
 derive (EPow expr1 expr2) = do --netacno
   v2 <- derive expr2
   return $ EMul (EPow expr1 expr2) (EAdd (EMul v2 $ ELog expr1) (EDiv expr2 expr1))

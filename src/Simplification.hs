@@ -51,6 +51,11 @@ simplify (EAdd (EMul (ENum a) exp1) exp2) = if (exp1 == exp2)
                                             then EMul (ENum (a+1)) (simplify exp1)
                                             else EAdd (EMul (ENum a) (simplify exp1)) (simplify exp2)
 
+simplify (EAdd exp1 (EAdd exp2 exp3)) = if (exp1 == exp2) 
+                                        then (EAdd  (simplify exp3) (EMul (ENum 2) (simplify exp1)))
+                                        else if (exp1 == exp3)
+                                            then (EAdd (simplify exp2) (EMul (ENum 2) (simplify exp1)))
+                                            else (EAdd (simplify exp1) (EAdd (simplify exp2) (simplify exp3)))
 
 simplify (EMul (EMul (ENum a) exp1) (EMul (ENum b) exp2)) = if (exp1 == exp2)
                                                             then EMul (ENum (a*b)) (EPow (simplify exp1) (ENum 2))
@@ -113,15 +118,15 @@ simplify (EAdd (ENeg exp1) exp2) = ESub (simplify exp2) (simplify exp1)
 
 -- Ovo moze i ne mora; (ako je argument sinusa/kosinusa numericka vrednost van [-pi, pi], ubaciti u dati interval)
 simplify exp@(ESin (ENum a)) = if (a > pi) 
-                               then (simplify (ESin (ENum (a-pi)))) 
+                               then (simplify (ESin (ENum (a-2*pi)))) 
                                else (if (a < -pi) 
-                                     then (simplify (ESin (ENum (a+pi)))) 
+                                     then (simplify (ESin (ENum (a+2*pi)))) 
                                      else exp)
 
 simplify exp@(ECos (ENum a)) = if (a > pi) 
-                               then (simplify (ECos (ENum (a-pi)))) 
+                               then (simplify (ECos (ENum (a-2*pi)))) 
                                else (if (a < -pi) 
-                                     then (simplify (ECos (ENum (a+pi)))) 
+                                     then (simplify (ECos (ENum (a+2*pi)))) 
                                      else exp)
 
 -- sabiranje i oduzimanje s istim deliocem
@@ -137,7 +142,18 @@ simplify (ELog (EPow exp1 exp2)) = (EMul (simplify exp2) (ELog (simplify exp1)))
 
 -- (x^y)^z = x^(y*z)
 simplify(EPow (EPow exp1 exp2) exp3) = EPow (simplify exp1) (simplify (EMul (simplify exp2) (simplify exp3)))
---------------------------------------------
+
+simplify (ESub exp1 (EAdd exp2 exp3)) = if exp1 == exp2
+                                        then simplify (ENeg (simplify exp3))
+                                        else if exp1 == exp3
+                                             then simplify (ENeg (simplify exp2))
+                                             else (ESub (simplify exp1) (EAdd (simplify exp2) (simplify exp3)))
+
+simplify (ESub (EAdd exp2 exp3) exp1) = if exp1 == exp2
+                                        then simplify exp3
+                                        else if exp1 == exp3
+                                             then simplify exp2
+                                             else (ESub (EAdd (simplify exp2) (simplify exp3)) (simplify exp1))--------------------------------------------
 -- Ovo na dno, specificnije prvo ispitati --
 --------------------------------------------
 
